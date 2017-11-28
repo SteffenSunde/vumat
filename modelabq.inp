@@ -1,0 +1,120 @@
+*Heading
+*Preprint, echo=NO, model=NO, history=NO, contact=NO
+**
+** PARTS
+**
+*Part, name=Part-1
+*Node
+      1, 0, 0, 0
+      2, 0, 0, 1e-3
+      3, 1e-3, 0, 1e-3
+      4, 1e-3, 0, 0
+      5, 0, 1e-3, 0
+      6, 0, 1e-3, 1e-3
+      7, 1e-3, 1e-3, 1e-3
+      8, 1e-3, 1e-3, 0
+**************************
+     11, 2e-3, 0, 0
+     12, 2e-3, 0, 1e-3
+     13, 3e-3, 0, 1e-3
+     14, 3e-3, 0, 0
+     15, 2e-3, 1e-3, 0
+     16, 2e-3, 1e-3, 1e-3
+     17, 3e-3, 1e-3, 1e-3
+     18, 3e-3, 1e-3, 0
+*Element, type=C3D8R
+ 1,  1, 2, 3, 4, 5, 6, 7, 8
+ 2,  11, 12, 13, 14, 15, 16, 17, 18
+*Elset, elset=UMAT
+ 1,
+*Elset, elset=REF
+ 2,
+** Section: vumat
+*Solid Section, elset=UMAT, material=vumat
+,
+*Solid Section, elset=REF, material=REF
+,
+*End Part
+**
+**
+** ASSEMBLY
+**
+*Assembly, name=Assembly
+**
+*Instance, name=Part-1-1, part=Part-1
+*End Instance
+**
+*Nset, nset=enc, instance=Part-1-1
+1, 2, 3, 4, 11, 12, 13, 14
+*Nset, nset=symx, instance=Part-1-1
+5, 6, 2, 1, 15, 16, 12, 11
+*Nset, nset=symz, instance=Part-1-1
+5, 8, 4, 1, 15, 18, 14, 11
+*Nset, nset=load, instance=Part-1-1
+5, 6, 7, 8
+*Nset, nset=load2, instance=Part-1-1
+15, 16, 17, 18
+*End Assembly
+**
+** MATERIALS
+**
+*Material, name=vumat
+*Density
+7800.,
+*DEPVAR
+9,
+*USER MATERIAL,CONSTANTS=6
+** YOUNG, POISS, SIGMA0,   ET,  TOL, MXITER
+2.1e+011,   0.3,  100e6, 50e6, 1e-6,     50
+*Material, name=REF
+*Density
+7800,
+*Elastic
+2.1e+011, 0.3
+*Plastic, hardening=kinematic
+1.0e8, 0
+1.5e8, 1
+**
+** BOUNDARY CONDITIONS
+**
+** Name: dispx Type: Displacement/Rotation
+*Boundary
+symx, 1, 1
+** Name: dispz Type: Displacement/Rotation
+*Boundary
+symz, 3, 3
+** Name: dispy Type: Displacement/Rotation
+*Boundary
+enc, 2, 2
+** ----------------------------------------------------------------
+**
+** STEP: chargement
+**
+*Step, name=chargement
+*Dynamic, Explicit
+, 0.001
+*Bulk Viscosity
+0.06, 1.2
+**
+** BOUNDARY CONDITIONS
+**
+** Name: vit Type: Velocity/Angular velocity
+*Boundary, type=VELOCITY
+load, 2, 2, -0.1
+*Boundary, type=VELOCITY
+load2, 2, 2, -0.1
+**
+** OUTPUT REQUESTS
+**
+**
+*Restart, write, number interval=1, time marks=NO
+**
+** FIELD OUTPUT: F-Output-1
+**
+*OUTPUT,FIELD,NUMBER INTERVAL=150,TIME MARKS=YES
+*ELEMENT OUTPUT
+ER,PEEQ,S,PE,LE,E,ENER,STATUS,SDV
+*NODE OUTPUT
+U,V,RF
+*Output, history, variable=PRESELECT, time interval=0.000106667
+*END STEP
