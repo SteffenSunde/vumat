@@ -2,6 +2,7 @@
 ! Von Mises yield criterion, linear kinematic hardening
 ! Written in fortran 90/95: Add /free compiler flag in abaqus environment file.
 ! Draft model for fretting fatigue crack initiation
+! Explicit cutting-plane algorithm used.
 ! (Compiles, converges and overlaps with abaqus intrinsic)
 ! Todo:
 ! - Check energies
